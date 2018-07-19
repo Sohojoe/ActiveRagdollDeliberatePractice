@@ -254,6 +254,12 @@ public class DeliberatePractice001Agent : MujocoAgent {
         bool noPhaseChange = true;
         bool isLeftFootDown = SensorIsInTouch[0] > 0f || SensorIsInTouch[1] > 0f;
         bool isRightFootDown = SensorIsInTouch[2] > 0f || SensorIsInTouch[3] > 0f;
+        float leftImpactImpulse = 
+            SensorIsInTouch[0] != 0 ? SensorImpactImpulse[0] : 0f
+            + SensorIsInTouch[1] != 0 ? SensorImpactImpulse[1] : 0f;
+        float rightImpactImpulse = 
+            SensorIsInTouch[2] != 0 ? SensorImpactImpulse[2] : 0f
+            + SensorIsInTouch[3] != 0 ? SensorImpactImpulse[3] : 0f;
         noPhaseChange = noPhaseChange && isLeftFootDown == _lastSenorState[0];
         noPhaseChange = noPhaseChange && isRightFootDown == _lastSenorState[1];
         _lastSenorState[0] = isLeftFootDown;
@@ -279,11 +285,13 @@ public class DeliberatePractice001Agent : MujocoAgent {
         _phaseBonus = 0;
         if (isLeftFootDown) {
             _phaseBonus = CalcPhaseBonus(LeftMin, LeftMax);
-            _phaseBonus += 0.1f;
+            _phaseBonus = (_phaseBonus / 2) + (leftImpactImpulse * 5);
+            // _phaseBonus += 0.1f;
             PhaseResetLeft();
         } else if (isRightFootDown) {
             _phaseBonus = CalcPhaseBonus(RightMin, RightMax);
-            _phaseBonus += 0.1f;
+            _phaseBonus = (_phaseBonus / 2) + (rightImpactImpulse * 5);
+            // _phaseBonus += 0.1f;
             PhaseResetRight();
         }
         _phase = isLeftFootDown ? 1 : 2;

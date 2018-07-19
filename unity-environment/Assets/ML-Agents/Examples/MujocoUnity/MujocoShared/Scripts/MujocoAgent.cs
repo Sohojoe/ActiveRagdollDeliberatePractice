@@ -60,6 +60,9 @@ namespace MujocoUnity
         [Tooltip("Current state of each sensor")]
         /**< \brief Current state of each sensor*/
         public List<float> SensorIsInTouch;
+        [Tooltip("Force of last impact on sensor")]
+        /**< \brief Force of last impact on sensor*/
+        public List<float> SensorImpactImpulse;
         [Tooltip("Gameobject for FocalPoint")]
         /**< \brief Gameobject for FocalPoint*/
         public GameObject FocalPoint;
@@ -461,6 +464,7 @@ namespace MujocoUnity
         {
             MujocoSensors = mujocoSensors;
             SensorIsInTouch = Enumerable.Range(0,mujocoSensors.Count).Select(x=>0f).ToList();
+            SensorImpactImpulse = Enumerable.Range(0,mujocoSensors.Count).Select(x=>0f).ToList();
             foreach (var sensor in mujocoSensors)
             {
                 sensor.SiteObject.gameObject.AddComponent<SensorBehavior>();
@@ -597,6 +601,8 @@ namespace MujocoUnity
             if (sensor != null) {
                 var idx = MujocoSensors.IndexOf(sensor);
                 SensorIsInTouch[idx] = 1f;
+                float impulse = other.impulse.magnitude * Time.fixedDeltaTime;
+                SensorImpactImpulse[idx] = impulse;
             }
 		}
         public void SensorCollisionExit(Collider sensorCollider, Collision other)
@@ -609,6 +615,7 @@ namespace MujocoUnity
             if (sensor != null) {
                 var idx = MujocoSensors.IndexOf(sensor);
                 SensorIsInTouch[idx] = 0f;
+                SensorImpactImpulse[idx] = 0f;
             }
         }              
     }
